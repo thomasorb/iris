@@ -1,0 +1,294 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Iris module &mdash; Iris 0.9 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/logo.ico"/>
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="Iris 0.9 documentation" href="index.html"/>
+        <link rel="next" title="Stats module" href="stats_module.html"/>
+        <link rel="prev" title="IRIS Guide" href="guide.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+
+        
+          <a href="index.html" class="icon icon-home"> Iris
+        
+
+        
+          
+          <img src="_static/logo_sidebar.png" class="logo" />
+        
+        </a>
+
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+        
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="guide.html">IRIS Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="guide.html#iris">Iris</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.html#start-iris">Start Iris</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.html#reference-frame">Reference frame</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.html#output">Output</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="guide.html#iris-viewer">Iris Viewer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="guide.html#start-the-viewer">Start the viewer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.html#communication-port">Communication port</a></li>
+<li class="toctree-l3"><a class="reference internal" href="guide.html#using-the-viewer">Using the viewer</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="guide.html#basic-controls">Basic controls</a></li>
+<li class="toctree-l4"><a class="reference internal" href="guide.html#iris-controls">Iris controls</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="">Iris module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#iris-class">Iris class</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="stats_module.html">Stats module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="stats_module.html#imagestats-class">ImageStats class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="stats_module.html#referencefile-class">ReferenceFile class</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="utils_module.html">Utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="viewer_module.html">Viewer module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="viewer_module.html#irisviewer-class">IrisViewer class</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="constants_module.html">Constants</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#v0-9-first-release">v0.9 First release</a></li>
+</ul>
+</li>
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">Iris</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Iris module</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/iris_module.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <div class="section" id="iris-module">
+<span id="id1"></span><h1><a class="toc-backref" href="#id2">Iris module</a><a class="headerlink" href="#iris-module" title="Permalink to this headline">¶</a></h1>
+<div class="contents topic" id="contents">
+<p class="topic-title first">Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#iris-module" id="id2">Iris module</a><ul>
+<li><a class="reference internal" href="#iris-class" id="id3">Iris class</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<span class="target" id="module-iris.iris"></span><div class="section" id="iris-class">
+<h2><a class="toc-backref" href="#id3">Iris class</a><a class="headerlink" href="#iris-class" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="iris.iris.Iris">
+<em class="property">class </em><code class="descclassname">iris.iris.</code><code class="descname">Iris</code><span class="sig-paren">(</span><em>image_path</em>, <em>force_refresh=False</em>, <em>daemon_port=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#iris.iris.Iris" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">orb.core.Tools</span></code></p>
+<p>Interface class between the user and
+<a class="reference internal" href="stats_module.html#iris.stats.ImageStats" title="iris.stats.ImageStats"><code class="xref py py-class docutils literal"><span class="pre">iris.stats.ImageStats</span></code></a></p>
+<p>This class is called by <strong>scripts/iris</strong></p>
+<dl class="method">
+<dt id="iris.iris.Iris.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>image_path</em>, <em>force_refresh=False</em>, <em>daemon_port=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#iris.iris.Iris.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Init class.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>image_path</strong> &#8211; Path to the SITELLE image.</li>
+<li><strong>force_refresh</strong> &#8211; (Optional) If True the given image is
+considered to be a reference image ad all previous files are
+erased (default False).</li>
+<li><strong>kwargs</strong> &#8211; Keyword arguments of orb.core.Tools class (see
+ORB documentation).</li>
+<li><strong>daemon_port</strong> &#8211; Listening port of the viewer daemon.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="iris.iris.Iris._get_outcube_path">
+<code class="descname">_get_outcube_path</code><span class="sig-paren">(</span><em>camera</em><span class="sig-paren">)</span><a class="headerlink" href="#iris.iris.Iris._get_outcube_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the path to the ouput cube.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>camera</strong> &#8211; Camera number. May be 0, 1 or 2.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="iris.iris.Iris.run_stats">
+<code class="descname">run_stats</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#iris.iris.Iris.run_stats" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run statistics computation.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="stats_module.html" class="btn btn-neutral float-right" title="Stats module" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="guide.html" class="btn btn-neutral" title="IRIS Guide" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Thomas Martin (thomas.martin.1@ulaval.ca).
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.9',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

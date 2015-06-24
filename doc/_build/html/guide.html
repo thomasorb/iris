@@ -1,0 +1,365 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>IRIS Guide &mdash; Iris 0.9 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/logo.ico"/>
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="Iris 0.9 documentation" href="index.html"/>
+        <link rel="next" title="Iris module" href="iris_module.html"/>
+        <link rel="prev" title="IRIS Documentation" href="index.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+
+        
+          <a href="index.html" class="icon icon-home"> Iris
+        
+
+        
+          
+          <img src="_static/logo_sidebar.png" class="logo" />
+        
+        </a>
+
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+        
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="">IRIS Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#iris">Iris</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#start-iris">Start Iris</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reference-frame">Reference frame</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#output">Output</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#iris-viewer">Iris Viewer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#start-the-viewer">Start the viewer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#communication-port">Communication port</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#using-the-viewer">Using the viewer</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#basic-controls">Basic controls</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#iris-controls">Iris controls</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="iris_module.html">Iris module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="iris_module.html#iris-class">Iris class</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="stats_module.html">Stats module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="stats_module.html#imagestats-class">ImageStats class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="stats_module.html#referencefile-class">ReferenceFile class</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="utils_module.html">Utils module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="viewer_module.html">Viewer module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="viewer_module.html#irisviewer-class">IrisViewer class</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="constants_module.html">Constants</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#v0-9-first-release">v0.9 First release</a></li>
+</ul>
+</li>
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">Iris</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>IRIS Guide</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/guide.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <div class="section" id="iris-guide">
+<span id="id1"></span><h1>IRIS Guide<a class="headerlink" href="#iris-guide" title="Permalink to this headline">¶</a></h1>
+<p>Iris is made to analyze SITELLE&#8217;s raw data as soon as it is
+obtained. On one hand each image must be analyzed to get stars FWHM,
+extinction, sky background and guiding shift. On the other hand data
+must be eye-checked. Two softwares have thus been created:</p>
+<ul class="simple">
+<li><strong>iris</strong>: which analyzes the data and outputs the result on the
+standard output.</li>
+<li><strong>iris-viewer</strong>: which helps the observer to walk into the analyzed data.</li>
+</ul>
+<dl class="docutils">
+<dt><strong>iris-viewer</strong> can be used independently. Each time a new frame has</dt>
+<dd>been analyzed with <strong>iris</strong> a message is sent through a socket to the
+viewer to update its data.</dd>
+</dl>
+<div class="section" id="iris">
+<h2>Iris<a class="headerlink" href="#iris" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="start-iris">
+<h3>Start Iris<a class="headerlink" href="#start-iris" title="Permalink to this headline">¶</a></h3>
+<p><strong>iris</strong> is a simple command line that takes the image to analyze as
+an argument. It does not discover new data by itself. Each time a new
+image has been acquired it can be launched like this:</p>
+<div class="highlight-python"><div class="highlight"><pre>iris image_path
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Iris can be launched anywhere and the given path can be
+either relative or absolute. If you always launch iris in
+the same folder don&#8217;t forget to set a new reference image
+for each new target/run.</p>
+</div>
+</div>
+<div class="section" id="reference-frame">
+<h3>Reference frame<a class="headerlink" href="#reference-frame" title="Permalink to this headline">¶</a></h3>
+<p>Most of the parameters must be computed against a set of reference
+parameters (shift, extinction) so that the first image to be analyzed
+must be taken as a reference. Iris can be told to use a frame as a
+reference with &#8216;-r&#8217; option:</p>
+<div class="highlight-python"><div class="highlight"><pre>iris -r reference_image_path
+</pre></div>
+</div>
+</div>
+<div class="section" id="output">
+<h3>Output<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h3>
+<p>The output of <strong>iris</strong> is a single line printed on the stdout, e.g.:</p>
+<div class="highlight-python"><div class="highlight"><pre>1 30 1.81927131216 0.00107911222971 1.83355577149 0.00106765539896 -0.0 4.62888510997e-05 119.280240751 0.0398323042238 0.0 0.00332950208345 0.0 0.00323401996626 0.0 0.00329366699499 0.0 0.00327874916229
+</pre></div>
+</div>
+<p>The order of the parameters is (see <a class="reference internal" href="constants_module.html#iris.constants.KEY_LIST" title="iris.constants.KEY_LIST"><code class="xref py py-const docutils literal"><span class="pre">iris.constants.KEY_LIST</span></code></a>):</p>
+<div class="highlight-python"><div class="highlight"><pre>odometer_number star_number fwhm-arc-1 fwhm-arc-1_err fwhm-arc-2 fwhm-arc-2_err extinction extinction_err background background_err dx-pix-1 dx-pix-1_err dy-pix-1 dy-pix-1_err dx-pix-2 dx-pix-2_err dy-pix-2 dy-pix-2_err
+</pre></div>
+</div>
+<p>A reference file is also created to store reference parameters and the
+statistics of each frame analyzed after the reference frame. All the
+created files are stored in <code class="file docutils literal"><span class="pre">.iris/</span></code>.</p>
+</div>
+</div>
+<div class="section" id="iris-viewer">
+<h2>Iris Viewer<a class="headerlink" href="#iris-viewer" title="Permalink to this headline">¶</a></h2>
+<p>The <strong>iris-viewer</strong> is a viewer based on the <strong>orb-viewer</strong> which
+displays the cube made of all the frames acquired after the reference
+frames. The viewer is updated as soon as a new frame is acquired, you
+just have to wait for <strong>iris</strong> to create the merged frame (which can
+take up to a 5 seconds).</p>
+<div class="section" id="start-the-viewer">
+<h3>Start the viewer<a class="headerlink" href="#start-the-viewer" title="Permalink to this headline">¶</a></h3>
+<p>It can be started by typing:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">iris</span><span class="o">-</span><span class="n">viewer</span>
+</pre></div>
+</div>
+<p>in the same folder where <strong>iris</strong> has been launched. In the case you
+need to start it at another place just give it the path to the IRIS
+reference file.</p>
+</div>
+<div class="section" id="communication-port">
+<h3>Communication port<a class="headerlink" href="#communication-port" title="Permalink to this headline">¶</a></h3>
+<p><strong>iris</strong> tell the <strong>iris-viewer</strong> when to update by sending a message
+through a socket. You may want to choose another port for the listener
+than the one attributed by default (9000) e.g. the viewer has crashed
+and the socket has not been released or the socket is already used by
+another program). In this case you can attribute a new socket this
+way:</p>
+<div class="highlight-python"><div class="highlight"><pre>iris-viewer -p 8999
+</pre></div>
+</div>
+<p>But don&#8217;t forget to do the same with iris:</p>
+<div class="highlight-python"><div class="highlight"><pre>iris image_path -p 8999
+</pre></div>
+</div>
+</div>
+<div class="section" id="using-the-viewer">
+<h3>Using the viewer<a class="headerlink" href="#using-the-viewer" title="Permalink to this headline">¶</a></h3>
+<a class="reference internal image-reference" href="_images/iris-viewer.png"><img alt="_images/iris-viewer.png" class="align-center" src="_images/iris-viewer.png" style="width: 100%;" /></a>
+<div class="section" id="basic-controls">
+<h4>Basic controls<a class="headerlink" href="#basic-controls" title="Permalink to this headline">¶</a></h4>
+<p>The basic controls are exactly the same as <strong>orb-viewer</strong>. In the
+upper part you can choose the scaling type and the index of the frame
+to display. It is also possible to save the displayed image in a
+separate FITS file.</p>
+<p>In the frame you can use the following key combinations:</p>
+<ul class="simple">
+<li><code class="xref std std-option docutils literal"><span class="pre">CTRL</span> <span class="pre">+</span> <span class="pre">right</span> <span class="pre">button</span></code> Set the contrast and the scale center value.</li>
+<li><code class="xref std std-option docutils literal"><span class="pre">CTRL</span> <span class="pre">+</span> <span class="pre">left</span> <span class="pre">button</span></code> Span the image.</li>
+<li><code class="xref std std-option docutils literal"><span class="pre">right</span> <span class="pre">button</span></code> Draw a squared region. As soon as the region
+is drawn the interferogram of the region is displayed in a separate
+plot.</li>
+</ul>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The interferogram of a region might be very strange because
+it is a sum of all the interferograms. If you draw a large
+region (even a few pixels large) you will sum interferograms
+which have different angles and thus different step
+size. Their sum is not reliable for emission lines regions
+(see the image above) but it is reliable if you select a
+star : it will give you an idea of the transmission curve
+far from the ZPD. <strong>You can select a one pixel region by
+clicking on the cube without drawing a square</strong>.</p>
+</div>
+</div>
+<div class="section" id="iris-controls">
+<h4>Iris controls<a class="headerlink" href="#iris-controls" title="Permalink to this headline">¶</a></h4>
+<p>It is possible to choose which camera is displayed. It can be the
+camera 1, the camera 2 or the merged frame. You&#8217;ll notice that the
+merged frame is only made of little squares around the selected
+stars. This is because it takes far much time (20 to 30 s instead of
+5 s) to transform a whole 2048x2064 frame.</p>
+<p>For each frame the computed statistics are also displayed. For the
+last frame it can take some time to get the stats (30 s in general
+after the acquisition). By selecting one parameter (e.g the
+extinction) you will get the plot of its value for all the frames of
+the cube.</p>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="iris_module.html" class="btn btn-neutral float-right" title="Iris module" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral" title="IRIS Documentation" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Thomas Martin (thomas.martin.1@ulaval.ca).
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.9',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

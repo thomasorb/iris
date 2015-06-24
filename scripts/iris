@@ -1,0 +1,143 @@
+#!/usr/bin/python
+# *-* coding: utf-8 *-*
+# Author: Thomas Martin <thomas.martin.1@ulaval.ca>
+# File: iris
+
+## Copyright (c) 2010-2014 Thomas Martin <thomas.martin.1@ulaval.ca>
+## 
+## This file is part of IRIS
+##
+## IRIS is free software: you can redistribute it and/or modify it
+## under the terms of the GNU General Public License as published by
+## the Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+##
+## IRIS is distributed in the hope that it will be useful, but WITHOUT
+## ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+## or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+## License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with IRIS.  If not, see <http://www.gnu.org/licenses/>.
+
+####################################################
+############ IRIS ##################################
+####################################################
+
+# This script runs iris-image-stats
+
+
+import sys, os
+import argparse
+from argparse import ArgumentParser
+
+import numpy as np
+
+import iris.version
+import iris.iris
+import orb.version
+import iris.utils
+import traceback
+
+stdout_path = os.path.join(iris.constants.DATA_PREFIX, 'iris.stdout')
+stderr_path = os.path.join(iris.constants.DATA_PREFIX, 'iris.stderr')
+
+# stdout and stderr are redirected to a logfile
+sys.stdout = open(stdout_path, 'a')
+sys.stderr = open(stderr_path, 'a')
+
+def main(args):
+    """Init Iris
+
+    :param args: command line arguments parsed by ArgumentParser.
+    """
+    def stop_on_error(debug, e):
+        if debug:
+            sys.stderr.write('ERROR : {}\n'.format(e))
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            traceback.print_tb(exc_traceback, limit=5, file=sys.stderr)
+    
+        sys.stdout = sys.__stdout__
+        print_results(None)
+        sys.exit(2)
+
+    def print_results(results):
+        results_list = list()
+        for key in iris.constants.KEY_LIST:
+            if results is not None:
+                if key in results:
+                    results_list.append(str(results[key]))
+                else:
+                    results_list.append(str(np.nan))
+            else:
+                results_list.append(str(np.nan))
+        sys.stdout.write(' '.join(results_list) + '\n')
+
+    # Init Iris
+    try:
+        if args.debug:
+            # sdtout is redirected to stderr to keep stdout clean
+            sys.stderr = sys.__stderr__
+            sys.stdout = sys.stderr
+            
+        proc = iris.iris.Iris(
+            args.cam1_image_path,
+            force_refresh=args.force_refresh,
+            data_prefix=iris.constants.DATA_PREFIX,
+            no_log=True)
+    
+        # Update viewer
+        iris.utils.send_msg_to_daemon('update', args.port)
+    
+        # Run Stats
+        results = proc.run_stats()
+    
+        # write results on stdout
+        sys.stdout = sys.__stdout__
+        print_results(results)
+        
+    except Exception, e:
+        stop_on_error(args.debug, e)
+        
+    except KeyboardInterrupt, e:
+        stop_on_error(args.debug, e)
+
+    
+    sys.exit(0)
+        
+        
+########################
+### MAIN ###############
+########################
+    
+if __name__ == "__main__":
+
+    # Create the parser class and the command line options
+    parser = ArgumentParser(
+        version=('IRIS-version: {}, ORB-version: {}'.format(
+            iris.version.__version__, orb.version.__version__)),
+        description="Realtime observation interface for SITELLE")
+  
+
+    parser.add_argument('cam1_image_path',
+                        help='Path to the FITS image from camera 1')
+    
+    
+    parser.add_argument('-r', dest='force_refresh', action='store_true',
+                        default=False, help="Force refresh. Passed image will be considered as the new reference image.")
+
+    parser.add_argument('-p', '--port', dest='port', default=9000,
+                        type=int,
+                        help='Listener port')
+
+    parser.add_argument('--debug', dest='debug', action='store_true',
+                        default=False, help="debug mode, all messages are printed on stderr.")
+     
+    # parse the command line arguments
+    args = parser.parse_args()
+
+    # launch the main function
+    main(args)
+
+
+

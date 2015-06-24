@@ -1,0 +1,83 @@
+#!/usr/bin/python
+# *-* coding: utf-8 *-*
+# Author: Thomas Martin <thomas.martin.1@ulaval.ca> 
+# File: iris-viewer
+
+## Copyright (c) 2010-2014 Thomas Martin <thomas.martin.1@ulaval.ca>
+## 
+## This file is part of ORB
+##
+## ORB is free software: you can redistribute it and/or modify it
+## under the terms of the GNU General Public License as published by
+## the Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+##
+## ORB is distributed in the hope that it will be useful, but WITHOUT
+## ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+## or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+## License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with ORB.  If not, see <http://www.gnu.org/licenses/>.
+
+import sys, os
+import gtk
+from argparse import ArgumentParser
+import argparse
+
+import iris
+import iris.utils
+from iris.viewer import IrisViewer
+
+import orb
+import socket
+
+###########################################
+### MAIN ##################################
+###########################################
+    
+def main(args):
+    
+    def stop_daemon(port):
+        iris.utils.send_msg_to_daemon('stop', port)
+        
+    try:
+        iris_viewer = IrisViewer(debug=args.debug)
+        iris_viewer._start_listener_daemon(args.port)
+        root = iris_viewer.get_widget()
+        root.show_all()
+        iris_viewer.load_file(args.cube_path)
+        gtk.main()
+    except KeyboardInterrupt, e:
+        print 'Keyboard interrupt'
+        stop_daemon(args.port)
+    except Exception, e:
+        print 'Error {}'.format(e)
+        stop_daemon(args.port)
+        
+        
+
+if __name__ == "__main__":
+
+    parser = ArgumentParser(
+        version=('ORB-version {}'.format(
+            orb.core.__version__)),
+        description="IRIS viewer")
+    
+    parser.add_argument('cube_path', nargs='?',
+                        default='.iris/cube.1.hdf5',
+                        help='Path to a FITS/HDF5 cube. Set to .iris/cube.1.hdf5 by default so that the cube created by the IRIS process is loaded automatically if launched in the same folder.')
+
+    parser.add_argument('-p', '--port', dest='port', default=9000,
+                        type=int,
+                        help='Listener port e.g. if the port is already used by another process (default 9000)')
+    
+    parser.add_argument("--debug", dest="debug", default=False,
+                        action="store_true",
+                        help="Print warnings and errors on stdout.")
+    
+    args = parser.parse_args()
+
+    main(args)
+        
+

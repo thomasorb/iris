@@ -1,0 +1,93 @@
+#!/usr/bin/python
+# *-* coding: utf-8 *-*
+# Author: Thomas Martin <thomas.martin.1@ulaval.ca>
+# File: iris-image-mapme
+
+## Copyright (c) 2010-2015 Thomas Martin <thomas.martin.1@ulaval.ca>
+## 
+## This file is part of IRIS
+##
+## IRIS is free software: you can redistribute it and/or modify it
+## under the terms of the GNU General Public License as published by
+## the Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+##
+## IRIS is distributed in the hope that it will be useful, but WITHOUT
+## ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+## or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+## License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with IRIS.  If not, see <http://www.gnu.org/licenses/>.
+
+####################################################
+############ IRIS MapME ###########################
+####################################################
+
+# This script create a map of the modulation efficiency from a laser
+# frame.  The more fringes you have (the farest you are from zpd) the
+# better will be the result.
+
+# To run this script simply use the following command :
+# $ ./iris-map-me image.fits
+
+import sys, os
+import argparse
+from argparse import ArgumentParser
+
+import numpy as np
+
+import orb.cutils
+import orb.version
+from orb.core import Tools
+
+import iris.version
+
+
+def main(args):
+    to = Tools(no_log=True)
+    if os.path.splitext(args.laser_frame_path)[1] == '.fits':
+        frame_paths = [args.laser_frame_path]
+    else:
+        frame_paths = list()
+        with open(args.laser_frame_path) as f:
+            for line in f:
+                frame_paths.append(line.strip())
+
+    mean_me = None
+    for iframe_path in frame_paths:
+        me = orb.cutils.map_me(to.read_fits(iframe_path))
+        if mean_me is None:
+            mean_me = np.copy(me)
+        else:
+            mean_me += me
+        result_path = os.path.splitext(
+            (os.path.split(iframe_path)[-1]))[0] + '.me.fits'
+        to.write_fits(result_path, me, overwrite=True)
+    if len(frame_paths) > 1:
+        mean_me /= len(frame_paths)
+        mean_me_path = os.path.splitext(result_path)[0] + '.mean.fits'
+        to.write_fits(mean_me_path, mean_me, overwrite=True)
+        
+    
+
+
+if __name__ == "__main__":
+    
+    parser = ArgumentParser(
+        version=('IRIS-version: {}, ORB-version: {}'.format(
+            iris.version.__version__, orb.version.__version__)),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        description="Create a map of the modulation efficiency from a laser frame.")
+
+    parser.add_argument('laser_frame_path',
+                        action='store',
+                        help="Path to the laser frame (can be a list of frames). Note that the more fringes, i.e. the farest you are from zpd, the better will be the result. If a list is passed the mean map will be returned also.")
+
+
+    args = parser.parse_args()
+
+    main(args)
+
+
+

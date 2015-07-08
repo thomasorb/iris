@@ -1,0 +1,112 @@
+#!/usr/bin/python
+# *-* coding: utf-8 *-*
+# Author: Thomas Martin <thomas.martin.1@ulaval.ca>
+# File: iris-image-detrend
+
+## Copyright (c) 2010-2015 Thomas Martin <thomas.martin.1@ulaval.ca>
+## 
+## This file is part of IRIS
+##
+## IRIS is free software: you can redistribute it and/or modify it
+## under the terms of the GNU General Public License as published by
+## the Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+##
+## IRIS is distributed in the hope that it will be useful, but WITHOUT
+## ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+## or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+## License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with IRIS.  If not, see <http://www.gnu.org/licenses/>.
+
+####################################################
+############ IRIS Map Me ###########################
+####################################################
+
+# This script create a map of the modulation efficiency from a laser
+# frame.  The more fringes you have (the farest you are from zpd) the
+# better will be the result.
+
+# To run this script simply use the following command :
+# $ ./iris-map-me image.fits
+
+import sys, os
+import argparse
+from argparse import ArgumentParser
+
+import numpy as np
+
+import orb.cutils
+import orb.version
+from orb.core import Tools
+
+import iris.version
+import astropy.io.fits as pyfits
+import astropy.wcs as pywcs
+
+def main(args):
+    to = Tools(no_log=True)
+    if os.path.splitext(args.image_path)[1] == '.fits':
+        image_paths = [args.image_path]
+    else:
+        image_paths = list()
+        with open(args.image_path) as f:
+            for line in f:
+                image_paths.append(line.strip())
+
+    mean_me = None
+    for iimage_path in image_paths:
+        cam1, hdr = to.read_fits(iimage_path, image_mode='sitelle',
+                                 return_header=True, chip_index=1)
+        cam2 = to.read_fits(iimage_path, image_mode='sitelle',
+                            return_header=False, chip_index=2)
+
+        
+        hdr1 = pyfits.Header(hdr)
+        hdr2 = pyfits.Header(hdr)
+
+        wcs1 = pywcs.WCS(hdr)
+        wcs1.wcs.crval = [float(hdr['RA_DEG']), float(hdr['DEC_DEG'])]
+        wcs1.wcs.crpix = np.array(cam1.shape)/2.
+        wcs1.wcs.cdelt = [float(hdr['PIXSCAL1'])/3600.,
+                          float(hdr['PIXSCAL2'])/3600.]
+        wcs1.wcs.ctype = ['RA---TAN', 'DEC--TAN' ]
+        
+        wcs2 = pywcs.WCS(hdr)
+        wcs2.wcs.crval = [float(hdr['RA_DEG']), float(hdr['DEC_DEG'])]
+        wcs2.wcs.crpix = np.array(cam2.shape)/2.
+        wcs2.wcs.cdelt = [float(hdr['PIXSCAL1'])/3600.,
+                          float(hdr['PIXSCAL2'])/3600.]
+        wcs2.wcs.ctype = ['RA---TAN', 'DEC--TAN' ]
+        
+        hdr1.update(wcs1.to_header())
+        hdr2.update(wcs2.to_header())
+        
+        
+        cam1_path = os.path.splitext(iimage_path)[0] + '.cam1.fits'
+        cam2_path = os.path.splitext(iimage_path)[0] + '.cam2.fits'
+        to.write_fits(cam1_path, cam1, fits_header=hdr1, overwrite=True)
+        to.write_fits(cam2_path, cam2, fits_header=hdr2, overwrite=True)
+        
+        
+
+if __name__ == "__main__":
+    
+    parser = ArgumentParser(
+        version=('IRIS-version: {}, ORB-version: {}'.format(
+            iris.version.__version__, orb.version.__version__)),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        description="Remove bias and optionally dark and flat from a SITELLE raw image. The orginal image is also split into two images, one for each camera.")
+
+    parser.add_argument('image_path',
+                        action='store',
+                        help="Path to the image to detrend (can also be a list of frames).")
+
+
+    args = parser.parse_args()
+
+    main(args)
+
+
+

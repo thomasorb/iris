@@ -38,6 +38,10 @@ import iris.iris
 import orb.version
 import iris.utils
 import traceback
+import os
+
+if not os.path.exists(iris.constants.DATA_PREFIX):
+    os.makedirs(iris.constants.DATA_PREFIX)
 
 stdout_path = os.path.join(iris.constants.DATA_PREFIX, 'iris.stdout')
 stderr_path = os.path.join(iris.constants.DATA_PREFIX, 'iris.stderr')

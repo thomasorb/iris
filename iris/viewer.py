@@ -36,134 +36,36 @@ class IrisViewer(BaseViewer):
 
     daemon = None # IRIS daemon instance
     daemon_port = None # Communication port of the daemon
-
+    _lock = False
+    
     iris_reffile_path = None # reference file path
-    iris_stats = None # iris stats of the frame
     iris_all_stats = None # iris stats of all frames
 
     stat_window = None # stat window
 
-    def _start_listener_daemon(self, daemon_port=9000):
-        """Launch a socket listener daemon to enable communication
-        with the viewer from external processes.
 
-        :param daemon_port: Listening port of the daemon.
-
-        .. note:: If nescessary the listener may be stopped by sending the message 'stop', e.g.:
-        
-            .. code-block:: python
-            
-              import socket
-              s = socket.socket(socket.AF_INET,
-                                socket.SOCK_STREAM)
-              s.connect((socket.gethostname(), port))
-              s.send('stop'.encode('ascii'))
-              s.close()    
-        """
-        def _listen():
-            stop = False
-            while not stop:
-                # establish connection with client socket
-                clientSocket, addr = s.accept()
-                msg = clientSocket.recv(1024).decode('ascii')
-                print ' > message from {}: {}'.format(addr, msg)
-                if msg == 'update':
-                    self._reload_file()
-                elif msg == 'stop':
-                    stop = True
-                clientSocket.close()
-            print ' > daemon listener stopped'
-
-        self.daemon_port = daemon_port
-        s = socket.socket(socket.AF_INET,
-                          socket.SOCK_STREAM)
-        s.bind((socket.gethostname(), self.daemon_port))
-        s.listen(5)
-        self.daemon = threading.Thread(target=_listen)
-        self.daemon.daemon = True
-        self.daemon.start()
-
-    def _update_iris_cb(self, c):
-        """update-callback Reload data cube.
-
-        :param c: Caller instance.
-        """
-        self._reload_file()
-
-    def _get_selected_stat(self, c):
-        """stat-selection-callback.
-
-        :param c: Caller instance.
-        """
-        selection = c.get_selection()
-        selection.set_mode(gtk.SELECTION_SINGLE)
-        tree_model, tree_iter = selection.get_selected()
-        selected_stat = tree_model.get_value(tree_iter, 0)
-
-        self.update_all_stats()
-        zdata = self.iris_all_stats[0,:,selected_stat]
-        if self.stat_window is None:
-            self.stat_window = ZPlotWindow(None, None, None, None)
-            self.stat_window.show()
-        elif not self.stat_window.w.get_property('visible'):
-            self.stat_window = ZPlotWindow(None, None, None, None)
-            self.stat_window.show()
-            
-        self.stat_window.update(zdata)
-
-    def _set_image_index_cb(self, c):
-        """set-image-index-callback.
-
-        Called when a new image index is choosen.
-
-        :param c: Caller instance.
-        """
-        # get image stats
-        val = int(c.get_value())
-        cube = HDFCube(self.filepath)
-        odometer_nb = cube.get_frame_attribute(val, 'odometer_nb')
-        self.iris_reffile_path = os.path.join(
-            os.path.split(self.filepath)[0], 'iris.ref')
-        reffile = ReferenceFile(self.iris_reffile_path)
-        stats = reffile.get_attributes('{}'.format(odometer_nb))
-        self.iris_stats = dict()
-        for istat in stats:
-            self.iris_stats[istat[0]] = istat[1]
-        del reffile
-        self.update_stats_store()
-        
-        BaseViewer._set_image_index_cb(self, c)
-        
-    def _camera_changed_cb(self, c):
-        """camera-changed-callback.
-
-        Called when a new camera to display is choosen.
-
-        :param c: Caller instance.
-        """
-        
-        label = c.get_label()
-        fileroot = os.path.splitext(os.path.splitext(self.filepath)[0])[0]
-
-        if label == 'Camera 1':
-            filepath = fileroot + '.1.hdf5'
-        elif label == 'Camera 2':
-            filepath = fileroot + '.2.hdf5'
-        elif label == 'Merged cube':
-            filepath = fileroot + '.m.hdf5'
+    def _toggle_lock_cb(self, c):
+        self._lock = ~self._lock
+        if self._lock:
+            c.set_label('Unlock')
         else:
-            raise ValueError('Unknown button label')
-                        
-        if filepath != self.filepath:
-            self.load_file(filepath)
-
-        
-
-    def _get_plugins(self):
+            c.set_label('Lock')
+    
+    def _get_hplugins(self):
         """Create plugins to add to the base viewer."""
         control_frame = gtk.Frame('IRIS Controls')
-        control_framebox = gtk.HBox(spacing=3)
+        control_framebox = gtk.VBox(spacing=3)
 
+        # Controls
+        controlsbox = gtk.HBox()
+        lockbutton = gtk.Button('Lock')
+        lockbutton.connect('clicked', self._toggle_lock_cb)
+        refreshbutton = gtk.Button('Refresh')
+        refreshbutton.connect('clicked', self._update_iris_cb)
+        controlsbox.pack_start(lockbutton)
+        controlsbox.pack_start(refreshbutton)
+        control_framebox.pack_start(controlsbox, fill=True, expand=False)
+        
         # Change camera
         rbutton_box = gtk.VBox()
         rbutton1 = gtk.RadioButton(label='Camera 1')
@@ -202,16 +104,130 @@ class IrisViewer(BaseViewer):
         stats_tv.append_column(col_value)
         stats_tv.append_column(col_err)
 
+        stats_tv.set_size_request(200,-1)
         sw.add(stats_tv)
         statsbox.pack_start(sw, fill=True, expand=True)
-    
-       
 
         control_framebox.pack_start(statsbox, fill=True, expand=True)
         control_frame.add(control_framebox)
-        
+
+        self._add_plugins_postload_call(self._postload_call)
         return [control_frame]
 
+    def _start_listener_daemon(self, daemon_port=9000):
+        """Launch a socket listener daemon to enable communication
+        with the viewer from external processes.
+
+        :param daemon_port: Listening port of the daemon.
+
+        .. note:: If nescessary the listener may be stopped by sending the message 'stop', e.g.:
+        
+            .. code-block:: python
+            
+              import socket
+              s = socket.socket(socket.AF_INET,
+                                socket.SOCK_STREAM)
+              s.connect((socket.gethostname(), port))
+              s.send('stop'.encode('ascii'))
+              s.close()    
+        """
+        def _listen():
+            stop = False
+            while not stop:
+                # establish connection with client socket
+                clientSocket, addr = s.accept()
+                msg = clientSocket.recv(1024).decode('ascii')
+                print ' > message from {}: {}'.format(addr, msg)
+                if 'update' in msg:
+                    path = msg.split()[1]
+                    if path == self.filepath:
+                        if not self._lock:
+                            self._reload_file()
+                    else:
+                        self.load_file(path)
+                elif msg == 'stop':
+                    stop = True
+                clientSocket.close()
+            print ' > daemon listener stopped'
+
+        self.daemon_port = daemon_port
+        s = socket.socket(socket.AF_INET,
+                          socket.SOCK_STREAM)
+        s.bind((socket.gethostname(), self.daemon_port))
+        s.listen(5)
+        self.daemon = threading.Thread(target=_listen)
+        self.daemon.daemon = True
+        self.daemon.start()
+
+    def _update_iris_cb(self, c):
+        """update-callback Reload data cube.
+
+        :param c: Caller instance.
+        """
+        if not self._lock:
+            self._reload_file()
+
+    def _get_selected_stat(self, c):
+        """stat-selection-callback.
+
+        :param c: Caller instance.
+        """
+        selection = c.get_selection()
+        selection.set_mode(gtk.SELECTION_SINGLE)
+        tree_model, tree_iter = selection.get_selected()
+        selected_stat = tree_model.get_value(tree_iter, 0)
+        self.update_all_stats()
+        zdata = self.iris_all_stats[0,:,selected_stat]
+        if self.stat_window is None:
+            self.stat_window = ZPlotWindow(None, None, None, None,
+                                           title='Stats', simple=True)
+            self.stat_window.show()
+        elif not self.stat_window.w.get_property('visible'):
+            self.stat_window = ZPlotWindow(None, None, None, None,
+                                           title='Stats', simple=True)
+            self.stat_window.show()
+            
+        self.stat_window.update(zdata, ylabel=selected_stat)
+
+    def _set_image_index_cb(self, c):
+        """set-image-index-callback.
+
+        Called when a new image index is choosen.
+
+        :param c: Caller instance.
+        """
+        self.update_stats_store(int(c.get_value()))
+        BaseViewer._set_image_index_cb(self, c)
+        
+    def _camera_changed_cb(self, c):
+        """camera-changed-callback.
+
+        Called when a new camera to display is choosen.
+
+        :param c: Caller instance.
+        """
+        
+        label = c.get_label()
+        fileroot = os.path.splitext(os.path.splitext(self.filepath)[0])[0]
+
+        if label == 'Camera 1':
+            filepath = fileroot + '.1.hdf5'
+        elif label == 'Camera 2':
+            filepath = fileroot + '.2.hdf5'
+        elif label == 'Merged cube':
+            filepath = fileroot + '.m.hdf5'
+        else:
+            raise ValueError('Unknown button label')
+                        
+        if filepath != self.filepath:
+            self.load_file(filepath)
+
+    def _postload_call(self):
+        """Function called immediatly after a cube as been loaded"""
+        
+        self.wimage_index.set_value(self.dimz - 1)
+        self.update_all_stats()
+        self.update_stats_store(self.dimz - 1)
 
     def update_all_stats(self):
         """Load all the statistics of all the frames."""
@@ -249,19 +265,27 @@ class IrisViewer(BaseViewer):
         del reffile
                 
             
-    def update_stats_store(self):
+    def update_stats_store(self, index):
         """Update displayed statistics."""
         self.stats_store.clear()
-        for istat in self.iris_stats:
-            if '_err' not in istat:
-                key = istat
-                val = str(self.iris_stats[key])
-                if key + '_err' in self.iris_stats:
-                    err = str(self.iris_stats[key + '_err'])
-                else:
-                    err = ''
-                self.stats_store.append([
-                     key, val, err])
+        if self.iris_all_stats is not None:
+            stats = self.iris_all_stats[:,index][0]
+            for istat in stats:
+                if '_err' not in istat:
+                    key = istat
+                    if isinstance(stats[key], float):
+                        val = '{:.2f}'.format(stats[key])
+                    else:
+                        val = '{}'.format(stats[key])
+                    if key + '_err' in stats:
+                        if isinstance(stats[ key + '_err'], float):
+                            err = '{:.2f}'.format(stats[ key + '_err'])
+                        else:
+                            err = '{}'.format(stats[ key + '_err'])
+                        
+                    else:
+                        err = ''
+                    self.stats_store.append([
+                         key, val, err])
 
- 
         

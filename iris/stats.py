@@ -23,7 +23,7 @@
 # IMPORT CORE
 from orb.core import Tools
 from orb.astrometry import Astrometry, StarsParams, Aligner
-import orb.utils
+import orb.utils.image
 import orb.data as od
 import constants
 
@@ -154,7 +154,7 @@ class ImageStats(Tools):
         
         for istar in range(self.astro1.star_list.shape[0]):
             ix, iy = self.astro1.star_list[istar, :]
-            _xmin, _xmax, _ymin, _ymax = orb.utils.get_box_coords(
+            _xmin, _xmax, _ymin, _ymax = orb.utils.image.get_box_coords(
                 ix, iy,
                 self.astro1.fwhm_pix * 15,
                 0, self.dimx, 0, self.dimy)
@@ -162,7 +162,7 @@ class ImageStats(Tools):
             xmax.append(_xmax) ; ymax.append(_ymax)
 
 
-        sections = orb.utils.transform_frame(
+        sections = orb.utils.image.transform_frame(
             self.im2,
             xmin, xmax, ymin, ymax,
             self.reffile.get('align-params'),
@@ -337,12 +337,12 @@ class ImageStats(Tools):
         
         # flux
         flux = od.nanmean(od.array(fitM[:, 'aperture_flux'],
-                                     fitM[:, 'aperture_flux_err']))
+                                   fitM[:, 'aperture_flux_err']))
         add_data('flux', flux)
 
         # extinction
         fluxR = od.nanmean(od.array(fitRM[:, 'aperture_flux'],
-                                      fitRM[:, 'aperture_flux_err']))
+                                    fitRM[:, 'aperture_flux_err']))
         add_data('extinction', -2.5 * od.log10(flux / fluxR))
 
         # background

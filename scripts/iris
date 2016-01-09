@@ -90,13 +90,13 @@ def main(args):
             data_prefix=iris.constants.DATA_PREFIX,
             no_log=True)
     
-        # Update viewer
-        iris.utils.send_msg_to_daemon(
-            'update {}'.format(args.cam1_image_path),
-            args.port)
-    
         # Run Stats
         results = proc.run_stats()
+
+        # Update viewer
+        iris.utils.send_msg_to_daemon(
+            'update {}'.format(proc._get_outcube_path(1, absolute=True)),
+            args.port)
     
         # write results on stdout
         sys.stdout = sys.__stdout__

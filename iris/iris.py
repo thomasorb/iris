@@ -23,6 +23,7 @@
 from orb.core import Tools, OutHDFCube, HDFCube
 from stats import ImageStats
 import numpy as np
+import os
 
 class Iris(Tools):
     """Interface class between the user and
@@ -104,17 +105,22 @@ class Iris(Tools):
        
 
 
-    def _get_outcube_path(self, camera):
+    def _get_outcube_path(self, camera, absolute=False):
         """Return the path to the ouput cube.
 
         :param camera: Camera number. May be 0, 1 or 2.
+        :param absolute: If True, return absolute path.
         """
         if camera == 1 or camera == 2:
-            return self._data_prefix + 'cube.{}.hdf5'.format(camera)
+            path = self._data_prefix + 'cube.{}.hdf5'.format(camera)
         elif camera == 0:
-            return self._data_prefix + 'cube.m.hdf5'
+            path = self._data_prefix + 'cube.m.hdf5'
         else:
             self._print_error('camera must be 0, 1 or 2.')
+        if absolute:
+            return os.path.abspath(path)
+        else:
+            return path
 
 
     def run_stats(self):

@@ -140,7 +140,9 @@ class IrisViewer(BaseViewer):
                 print ' > message from {}: {}'.format(addr, msg)
                 if 'update' in msg:
                     path = msg.split()[1]
-                    if path == self.filepath:
+                    print ' > filepath: ', path
+                    if os.path.abspath(path) == os.path.abspath(
+                        self.filepath):
                         if not self._lock:
                             self._reload_file()
                     else:
@@ -164,6 +166,7 @@ class IrisViewer(BaseViewer):
 
         :param c: Caller instance.
         """
+        self.iris_all_stats = None
         if not self._lock:
             self._reload_file()
 
@@ -236,7 +239,7 @@ class IrisViewer(BaseViewer):
             os.path.split(self.filepath)[0], 'iris.ref')
         reffile = ReferenceFile(self.iris_reffile_path)
         
-        iris_all_stats = StarsParams(1, self.cube.dimz)
+        iris_all_stats = StarsParams(1, self.cube.shape[2])
         
         cube = HDFCube(self.filepath)
         for iframe in range(self.cube.dimz):
@@ -269,23 +272,24 @@ class IrisViewer(BaseViewer):
         """Update displayed statistics."""
         self.stats_store.clear()
         if self.iris_all_stats is not None:
-            stats = self.iris_all_stats[:,index][0]
-            for istat in stats:
-                if '_err' not in istat:
-                    key = istat
-                    if isinstance(stats[key], float):
-                        val = '{:.2f}'.format(stats[key])
-                    else:
-                        val = '{}'.format(stats[key])
-                    if key + '_err' in stats:
-                        if isinstance(stats[ key + '_err'], float):
-                            err = '{:.2f}'.format(stats[ key + '_err'])
+            if self.iris_all_stats.frame_nb > index:
+                stats = self.iris_all_stats[:,index][0]
+                for istat in stats:
+                    if '_err' not in istat:
+                        key = istat
+                        if isinstance(stats[key], float):
+                            val = '{:.2f}'.format(stats[key])
                         else:
-                            err = '{}'.format(stats[ key + '_err'])
-                        
-                    else:
-                        err = ''
-                    self.stats_store.append([
-                         key, val, err])
+                            val = '{}'.format(stats[key])
+                        if key + '_err' in stats:
+                            if isinstance(stats[ key + '_err'], float):
+                                err = '{:.2f}'.format(stats[ key + '_err'])
+                            else:
+                                err = '{}'.format(stats[ key + '_err'])
+
+                        else:
+                            err = ''
+                        self.stats_store.append([
+                             key, val, err])
 
         

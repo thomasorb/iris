@@ -108,7 +108,7 @@ class ImageStats(Tools):
         
         self.odometer_nb = int(self._get_hdr_keyword('EXPNUM'))
 
-        fov = float(self._get_config_parameter('FIELD_OF_VIEW'))
+        fov = float(self._get_config_parameter('FIELD_OF_VIEW_1'))
         fwhm_arc = float(self._get_config_parameter('INIT_FWHM'))
         pix_size = float(self._get_config_parameter('PIX_SIZE_CAM1'))
         

@@ -21,7 +21,7 @@
 ## along with IRIS.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from orb.visual import BaseViewer, ZPlotWindow
+from orb.viewer import BaseViewer, ZPlotWindow
 import socket
 import threading
 import gtk

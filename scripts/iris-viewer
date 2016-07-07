@@ -47,6 +47,8 @@ def main(args):
         iris_viewer._start_listener_daemon(args.port)
         root = iris_viewer.get_widget()
         root.show_all()
+        if not os.path.exists(args.cube_path):
+            raise Exception('Iris file could not be found ({}). Please lauch iris stats first.'.format(args.cube_path))
         iris_viewer.load_file(args.cube_path)
         gtk.main()
     except KeyboardInterrupt, e:

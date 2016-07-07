@@ -54,6 +54,7 @@ class Iris(Tools):
 
         Tools.__init__(self, **kwargs)
 
+
         self.imstats = ImageStats(image_path, force_refresh=force_refresh,
                                   **kwargs)
         

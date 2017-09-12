@@ -123,7 +123,7 @@ class ImageStats(Tools):
                               pix_size, pix_size, init_angle, init_dx, init_dy,
                               overwrite=True, **kwargs)
             result = aligner.compute_alignment_parameters(
-                correct_distorsion=False,
+                correct_distortion=False,
                 brute_force=True)
 
             self.reffile.append('align-params', result['coeffs'])

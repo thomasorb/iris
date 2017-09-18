@@ -29,7 +29,8 @@ import os
 from orb.core import HDFCube
 from orb.astrometry import StarsParams
 from stats import ReferenceFile
-
+import logging
+import warnings
 
 class IrisViewer(BaseViewer):
     """Iris Viewer class."""

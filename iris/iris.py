@@ -50,7 +50,7 @@ class Iris(Tools):
         :param daemon_port: Listening port of the viewer daemon.
         """
 
-        kwargs['config_file_name'] = 'config.sitelle.orb'
+        kwargs['instrument'] = 'sitelle'
 
         Tools.__init__(self, **kwargs)
 
@@ -117,7 +117,7 @@ class Iris(Tools):
         elif camera == 0:
             path = self._data_prefix + 'cube.m.hdf5'
         else:
-            self._print_error('camera must be 0, 1 or 2.')
+            raise StandardError('camera must be 0, 1 or 2.')
         if absolute:
             return os.path.abspath(path)
         else:

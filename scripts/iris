@@ -39,12 +39,14 @@ import orb.version
 import iris.utils
 import traceback
 import os
+from orb.core import Logger
 
 if not os.path.exists(iris.constants.DATA_PREFIX):
     os.makedirs(iris.constants.DATA_PREFIX)
 
 stdout_path = os.path.join(iris.constants.DATA_PREFIX, 'iris.stdout')
 stderr_path = os.path.join(iris.constants.DATA_PREFIX, 'iris.stderr')
+log_path    = os.path.join(iris.constants.DATA_PREFIX, 'iris.log')
 
 # stdout and stderr are redirected to a logfile
 sys.stdout = open(stdout_path, 'a')
@@ -77,6 +79,14 @@ def main(args):
                 results_list.append(str(np.nan))
         sys.stdout.write(' '.join(results_list) + '\n')
 
+    # start and config logging
+    try:
+        logger = Logger(debug=args.debug)
+    except AttributeError:
+        logger = Logger(debug=False)
+
+    logger.start_file_logging(logfile_path=log_path)
+
     # Init Iris
     try:
         if args.debug:
@@ -87,16 +97,15 @@ def main(args):
         proc = iris.iris.Iris(
             args.cam1_image_path,
             force_refresh=args.force_refresh,
-            data_prefix=iris.constants.DATA_PREFIX,
-            no_log=True)
+            data_prefix=iris.constants.DATA_PREFIX)
     
         # Run Stats
         results = proc.run_stats()
 
         # Update viewer
-        iris.utils.send_msg_to_daemon(
-            'update {}'.format(proc._get_outcube_path(1, absolute=True)),
-            args.port)
+        # iris.utils.send_msg_to_daemon(
+        #    'update {}'.format(proc._get_outcube_path(1, absolute=True)),
+        #    args.port)
     
         # write results on stdout
         sys.stdout = sys.__stdout__
@@ -117,6 +126,9 @@ def main(args):
 ########################
     
 if __name__ == "__main__":
+
+    import pydevd
+    pydevd.settrace('localhost', port=6666, stdoutToServer=True, stderrToServer=True, suspend=False)
 
     # Create the parser class and the command line options
     parser = ArgumentParser(

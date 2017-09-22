@@ -230,7 +230,7 @@ class ImageStats(Tools):
         # stars fit
         start_time = time.time()
         logging.info('Fitting_stars in camera 1')
-        fit1 = self.astro1.fit_stars_in_frame(0, multi_fit=True,
+        fit1 = self.astro1.fit_stars_in_frame(0, multi_fit=False,
                                               estimate_local_noise=False,
                                               no_aperture_photometry=True)
         logging.info('Stars fitted in {:.2f} s'.format(
@@ -240,7 +240,7 @@ class ImageStats(Tools):
         
         start_time = time.time()
         logging.info('Fitting_stars in camera 2')
-        fit2 = self.astro2.fit_stars_in_frame(0, multi_fit=True,
+        fit2 = self.astro2.fit_stars_in_frame(0, multi_fit=False,
                                               estimate_local_noise=False,
                                               no_aperture_photometry=True)
         logging.info('Stars fitted in {:.2f} s'.format(

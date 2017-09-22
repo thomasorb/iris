@@ -128,7 +128,7 @@ def main(args):
 if __name__ == "__main__":
 
     import pydevd
-    pydevd.settrace('localhost', port=6666, stdoutToServer=True, stderrToServer=True, suspend=False)
+    pydevd.settrace('localhost', port=8888, stdoutToServer=True, stderrToServer=True, suspend=False)
 
     # Create the parser class and the command line options
     parser = ArgumentParser(

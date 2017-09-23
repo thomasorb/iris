@@ -40,6 +40,7 @@ import iris.utils
 import traceback
 import os
 from orb.core import Logger
+import warnings
 
 if not os.path.exists(iris.constants.DATA_PREFIX):
     os.makedirs(iris.constants.DATA_PREFIX)
@@ -102,11 +103,6 @@ def main(args):
         # Run Stats
         results = proc.run_stats()
 
-        # Update viewer
-        # iris.utils.send_msg_to_daemon(
-        #    'update {}'.format(proc._get_outcube_path(1, absolute=True)),
-        #    args.port)
-    
         # write results on stdout
         sys.stdout = sys.__stdout__
         print_results(results)
@@ -117,7 +113,17 @@ def main(args):
     except KeyboardInterrupt, e:
         stop_on_error(args.debug, e)
 
-    
+    # Update the viewer if present. This has been moved out of the first exception
+    try:
+        # Update viewer
+         iris.utils.send_msg_to_daemon(
+            'update {}'.format(proc._get_outcube_path(1, absolute=True)),
+            args.port)
+    except:
+        warnings.warn("Could not refresh viewer. Make sure the viewer is started and listening to port %d"%args.port)
+
+
+
     sys.exit(0)
         
         
@@ -127,8 +133,8 @@ def main(args):
     
 if __name__ == "__main__":
 
-    import pydevd
-    pydevd.settrace('localhost', port=8888, stdoutToServer=True, stderrToServer=True, suspend=False)
+    #import pydevd
+    #pydevd.settrace('localhost', port=8888, stdoutToServer=True, stderrToServer=True, suspend=False)
 
     # Create the parser class and the command line options
     parser = ArgumentParser(

@@ -43,7 +43,7 @@ def main(args):
         iris.utils.send_msg_to_daemon('stop', port)
         
     try:
-        iris_viewer = IrisViewer(debug=args.debug)
+        iris_viewer = IrisViewer(debug=args.debug,config_file_name='config.sitelle.orb')
         iris_viewer._start_listener_daemon(args.port)
         root = iris_viewer.get_widget()
         root.show_all()

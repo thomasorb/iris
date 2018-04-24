@@ -32,6 +32,8 @@ import math
 import os
 import numpy as np
 import time
+import logging
+import warnings
 
 
 class ImageStats(Tools):
@@ -76,7 +78,7 @@ class ImageStats(Tools):
           ORB documentation).      
         """
 
-        kwargs['config_file_name'] = 'config.sitelle.orb'
+        kwargs['instrument'] = 'sitelle'
 
         Tools.__init__(self, **kwargs)
         self.kwargs = kwargs
@@ -88,7 +90,7 @@ class ImageStats(Tools):
         if force_refresh:
             self.refresh = True
         elif not os.path.exists(self._get_reference_file_path()):
-            self._print_warning('No reference file created yet. Image taken as reference image.')
+            warnings.warn('No reference file created yet. Image taken as reference image.')
             self.refresh = True
 
         # open reference file
@@ -115,7 +117,7 @@ class ImageStats(Tools):
         # find alignment parameters if nescessary
         if self.refresh:
             start_time = time.time()
-            self._print_msg('Computing alignment parameters')
+            logging.info('Computing alignment parameters')
             init_angle = float(self._get_config_parameter('INIT_ANGLE'))
             init_dx = float(self._get_config_parameter('INIT_DX'))
             init_dy = float(self._get_config_parameter('INIT_DY'))
@@ -123,7 +125,7 @@ class ImageStats(Tools):
                               pix_size, pix_size, init_angle, init_dx, init_dy,
                               overwrite=True, **kwargs)
             result = aligner.compute_alignment_parameters(
-                correct_distorsion=False,
+                correct_distortion=False,
                 brute_force=True)
 
             self.reffile.append('align-params', result['coeffs'])
@@ -134,19 +136,19 @@ class ImageStats(Tools):
             self.reffile.append('zoom-factor', result['zoom_factor'])
             self.reffile.append('ref-odometer', self.odometer_nb)
             
-            self._print_msg('Alignment parameters ({}) computed  in {:.2f} s'.format(self.reffile.get('align-params'), time.time() - start_time))
+            logging.info('Alignment parameters ({}) computed  in {:.2f} s'.format(self.reffile.get('align-params'), time.time() - start_time))
 
-        self.astro1 = Astrometry(self.im1, fwhm_arc, fov, **kwargs)
+        self.astro1 = Astrometry(self.im1, fwhm_arc=fwhm_arc, **kwargs)
         self.astro1.reset_star_list(self.reffile.get('star-list1'))
         self.astro1.reset_fwhm_arc(self.reffile.get('fwhm-arc'))
-        self.astro2 = Astrometry(self.im2, fwhm_arc, fov, **kwargs)
+        self.astro2 = Astrometry(self.im2, fwhm_arc=fwhm_arc, **kwargs)
         self.astro2.reset_star_list(self.reffile.get('star-list2'))
         self.astro2.reset_fwhm_arc(self.reffile.get('fwhm-arc'))
 
 
         # creating merged frame
         align_params = self.reffile.get('align-params')
-        self._print_msg('Creating merged frame')
+        logging.info('Creating merged frame')
         start_time = time.time()
         self.imM = np.empty_like(self.im1)
         self.imM.fill(np.nan)
@@ -174,11 +176,11 @@ class ImageStats(Tools):
                 self.im1[xmin[isec]:xmax[isec], ymin[isec]:ymax[isec]]
                 + sections[isec])
             
-        self._print_msg('Merged frame created in {:.2f} s'.format(
+        logging.info('Merged frame created in {:.2f} s'.format(
             time.time() - start_time))
         
         # init astrometry of merged frame
-        self.astroM = Astrometry(self.imM, fwhm_arc, fov, **kwargs)
+        self.astroM = Astrometry(self.imM, fwhm_arc=fwhm_arc, **kwargs)
         self.astroM.reset_star_list(self.reffile.get('star-list1'))
         self.astroM.reset_fwhm_arc(self.reffile.get('fwhm-arc'))
 
@@ -195,7 +197,7 @@ class ImageStats(Tools):
         if key in self.hdr:
             return self.hdr[key]
         else:
-            self._print_error('Invalid image file the keyword {} must be present.'.format(key))
+            raise StandardError('Invalid image file the keyword {} must be present.'.format(key))
 
     def _get_stars_params_group(self, camera, ref=False):
         """Return the hdf5 group of a set of stars parameters given
@@ -227,29 +229,29 @@ class ImageStats(Tools):
 
         # stars fit
         start_time = time.time()
-        self._print_msg('Fitting_stars in camera 1')
-        fit1 = self.astro1.fit_stars_in_frame(0, multi_fit=True,
+        logging.info('Fitting_stars in camera 1')
+        fit1 = self.astro1.fit_stars_in_frame(0, multi_fit=False,
                                               estimate_local_noise=False,
                                               no_aperture_photometry=True)
-        self._print_msg('Stars fitted in {:.2f} s'.format(
+        logging.info('Stars fitted in {:.2f} s'.format(
             time.time() - start_time))
         fit1.save_stars_params(self._get_reference_file_path(),
                                self._get_stars_params_group(1))
         
         start_time = time.time()
-        self._print_msg('Fitting_stars in camera 2')
-        fit2 = self.astro2.fit_stars_in_frame(0, multi_fit=True,
+        logging.info('Fitting_stars in camera 2')
+        fit2 = self.astro2.fit_stars_in_frame(0, multi_fit=False,
                                               estimate_local_noise=False,
                                               no_aperture_photometry=True)
-        self._print_msg('Stars fitted in {:.2f} s'.format(
+        logging.info('Stars fitted in {:.2f} s'.format(
             time.time() - start_time))
         fit2.save_stars_params(self._get_reference_file_path(),
                                self._get_stars_params_group(2))
 
         start_time = time.time()
-        self._print_msg('Getting star photometry on merged frame')
+        logging.info('Getting star photometry on merged frame')
         fitM = self.astroM.fit_stars_in_frame(0, no_fit=True)
-        self._print_msg('Photometry computed in {:.2f} s'.format(
+        logging.info('Photometry computed in {:.2f} s'.format(
             time.time() - start_time))
         fitM.save_stars_params(self._get_reference_file_path(),
                                self._get_stars_params_group(0))
@@ -436,5 +438,5 @@ class ReferenceFile(Tools):
              elif no_error:
                  return None
              else:
-                 self._print_error('{} not in reference file'.format(dataset))
+                 raise StandardError('{} not in reference file'.format(dataset))
 

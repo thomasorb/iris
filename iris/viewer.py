@@ -25,11 +25,13 @@ from orb.viewer import BaseViewer, ZPlotWindow
 import socket
 import threading
 import gtk
+import gobject
 import os
 from orb.core import HDFCube
 from orb.astrometry import StarsParams
 from stats import ReferenceFile
-
+import logging
+import warnings
 
 class IrisViewer(BaseViewer):
     """Iris Viewer class."""
@@ -157,6 +159,7 @@ class IrisViewer(BaseViewer):
                           socket.SOCK_STREAM)
         s.bind((socket.gethostname(), self.daemon_port))
         s.listen(5)
+        gobject.threads_init()
         self.daemon = threading.Thread(target=_listen)
         self.daemon.daemon = True
         self.daemon.start()

@@ -34,6 +34,5 @@ def send_msg_to_daemon(msg, port):
         s.connect((socket.gethostname(), port))
         s.send(msg.encode('ascii'))
         s.close()
-    except Exception, e:
-        print 'Error on sending {} to listener daemon on port {}: {}'.format(
-            msg, port, e)
+    except:
+        raise StandardError('Error on sending {} to listener daemon on port {}: {}'.format(msg, port, e))

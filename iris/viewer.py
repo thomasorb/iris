@@ -26,6 +26,7 @@ import socket
 import threading
 import gtk
 import gobject
+gobject.threads_init()
 import os
 from orb.core import HDFCube
 from orb.astrometry import StarsParams
@@ -134,6 +135,7 @@ class IrisViewer(BaseViewer):
               s.close()    
         """
         def _listen():
+	    gobject.threads_init()
             stop = False
             while not stop:
                 # establish connection with client socket
@@ -146,9 +148,11 @@ class IrisViewer(BaseViewer):
                     if os.path.abspath(path) == os.path.abspath(
                         self.filepath):
                         if not self._lock:
-                            self._reload_file()
+			    gobject.idle_add(self._reload_file)
+                            #self._reload_file()
                     else:
-                        self.load_file(path)
+			gobject.idle_add(self.load_file,path)
+                        #self.load_file(path)
                 elif msg == 'stop':
                     stop = True
                 clientSocket.close()
@@ -196,7 +200,7 @@ class IrisViewer(BaseViewer):
         self.stat_window.update(zdata, ylabel=selected_stat)
 
     def _set_image_index_cb(self, c):
-        """set-image-index-callback.
+	"""set-image-index-callback.
 
         Called when a new image index is choosen.
 

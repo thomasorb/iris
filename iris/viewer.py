@@ -107,7 +107,7 @@ class IrisViewer(BaseViewer):
         stats_tv.append_column(col_value)
         stats_tv.append_column(col_err)
 
-        stats_tv.set_size_request(200,-1)
+        stats_tv.set_size_request(220,-1)
         sw.add(stats_tv)
         statsbox.pack_start(sw, fill=True, expand=True)
 
@@ -135,7 +135,7 @@ class IrisViewer(BaseViewer):
               s.close()    
         """
         def _listen():
-	    gobject.threads_init()
+            gobject.threads_init()
             stop = False
             while not stop:
                 # establish connection with client socket
@@ -148,10 +148,12 @@ class IrisViewer(BaseViewer):
                     if os.path.abspath(path) == os.path.abspath(
                         self.filepath):
                         if not self._lock:
-			    gobject.idle_add(self._reload_file)
+                            gobject.idle_add(self._reload_file)
+                            if self.image_region is not None:
+                                gobject.idle_add(self._on_select_region_cb,self.region)
                             #self._reload_file()
                     else:
-			gobject.idle_add(self.load_file,path)
+                        gobject.idle_add(self.load_file,path)
                         #self.load_file(path)
                 elif msg == 'stop':
                     stop = True
@@ -200,7 +202,7 @@ class IrisViewer(BaseViewer):
         self.stat_window.update(zdata, ylabel=selected_stat)
 
     def _set_image_index_cb(self, c):
-	"""set-image-index-callback.
+        """set-image-index-callback.
 
         Called when a new image index is choosen.
 

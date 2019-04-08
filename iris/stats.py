@@ -291,66 +291,66 @@ class ImageStats(Tools):
 
         # dx 1
         if self.refresh:
-            dx1 = od.array(0., fit1[:,'x_err'][0])
+            dx1 = od.array(0., np.nanmedian(fit1[:,'x_err']))
         else:
-            x1 = od.array(fit1[:,'x'][0], fit1[:,'x_err'][0])
-            x1_ref = od.array(fitR1[:,'x'][0], fitR1[:,'x_err'][0])
+            x1 = od.array(np.nanmedian(fit1[:,'x']), np.nanmedian(fit1[:,'x_err']))
+            x1_ref = od.array(np.nanmedian(fitR1[:,'x']), np.nanmedian(fitR1[:,'x_err']))
             dx1 = x1 - x1_ref
         add_data('dx-pix-1', dx1)
 
         # dx 2
         if self.refresh:
-            dx2 = od.array(0., fit2[:,'x_err'][0])
+            dx2 = od.array(0., np.nanmedian(fit2[:,'x_err']))
         else:
-            x2 = od.array(fit2[:,'x'][0], fit2[:,'x_err'][0])
-            x2_ref = od.array(fitR2[:,'x'][0], fitR2[:,'x_err'][0])
+            x2 = od.array(np.nanmedian(fit2[:,'x']), np.nanmedian(fit2[:,'x_err']))
+            x2_ref = od.array(np.nanmedian(fitR2[:,'x']), np.nanmedian(fitR2[:,'x_err']))
             dx2 = x2 - x2_ref
         add_data('dx-pix-2', dx2)
 
         # dy 1
         if self.refresh:
-            dy1 = od.array(0., fit1[:,'y_err'][0])
+            dy1 = od.array(0., np.nanmedian(fit1[:,'y_err']))
         else:
-            y1 = od.array(fit1[:,'y'][0], fit1[:,'y_err'][0])
-            y1_ref = od.array(fitR1[:,'y'][0], fitR1[:,'y_err'][0])
+            y1 = od.array(np.nanmedian(fit1[:,'y']), np.nanmedian(fit1[:,'y_err']))
+            y1_ref = od.array(np.nanmedian(fitR1[:,'y']), np.nanmedian(fitR1[:,'y_err']))
             dy1 = y1 - y1_ref
         add_data('dy-pix-1', dy1)
 
         # dx 2
         if self.refresh:
-            dy2 = od.array(0., fit2[:,'y_err'][0])
+            dy2 = od.array(0., np.nanmedian(fit2[:,'y_err']))
         else:
-            y2 = od.array(fit2[:,'y'][0], fit2[:,'y_err'][0])
-            y2_ref = od.array(fitR2[:,'y'][0], fitR2[:,'y_err'][0])
+            y2 = od.array(np.nanmedian(fit2[:,'y']), np.nanmedian(fit2[:,'y_err']))
+            y2_ref = od.array(np.nanmedian(fitR2[:,'y']), np,nanmedian(fitR2[:,'y_err']))
             dy2 = y2 - y2_ref
         add_data('dy-pix-2', dy2)      
         
         # fwhm 1
-        add_data('fwhm-pix-1', od.array(fit1[:, 'fwhm_pix'][0],
-                                        fit1[:, 'fwhm_err'][0]))
-        add_data('fwhm-arc-1', od.array(fit1[:, 'fwhm_arc'][0],
-                                        fit1[:, 'fwhm_arc_err'][0]))
+        add_data('fwhm-pix-1', od.array(np.nanpercentile(fit1[:, 'fwhm_pix'],10),
+                                       	np.nanmedian(fit1[:, 'fwhm_err'])))
+        add_data('fwhm-arc-1', od.array(np.nanpercentile(fit1[:, 'fwhm_arc'],10),
+          		               	np.nanmedian(fit1[:, 'fwhm_arc_err'])))
 
-        add_data('fwhm-pix-2', od.array(fit2[:, 'fwhm_pix'][0],
-                                        fit2[:, 'fwhm_err'][0]))
-        add_data('fwhm-arc-2', od.array(fit2[:, 'fwhm_arc'][0],
-                                        fit2[:, 'fwhm_arc_err'][0]))
+        add_data('fwhm-pix-2', od.array(np.nanpercentile(fit2[:, 'fwhm_pix'],10),
+                                        np.nanmedian(fit2[:, 'fwhm_err'])))
+        add_data('fwhm-arc-2', od.array(np.nanpercentile(fit2[:, 'fwhm_arc'],10),
+                                        np.nanmedian(fit2[:, 'fwhm_arc_err'])))
         
         
         # flux
-        flux = od.nanmean(od.array(fitM[:, 'aperture_flux'],
-                                   fitM[:, 'aperture_flux_err']))
+        flux = od.array(np.nanmedian(fitM[:, 'aperture_flux']),
+                        np.nanmedian(fitM[:, 'aperture_flux_err']))
         add_data('flux', flux)
 
         # extinction
-        fluxR = od.nanmean(od.array(fitRM[:, 'aperture_flux'],
-                                    fitRM[:, 'aperture_flux_err']))
+        fluxR = od.array(np.nanmedian(fitRM[:, 'aperture_flux']),
+                         np.nanmedian(fitRM[:, 'aperture_flux_err']))
         add_data('extinction', -2.5 * od.log10(flux / fluxR))
 
         # background
-        add_data('background', od.nanmean(
-            od.array(fitM[:, 'aperture_background'],
-                     fitM[:, 'aperture_background_err'])))
+        add_data('background', od.array(
+            np.nanmedian(fitM[:, 'aperture_background']),
+            np.nanmedian(fitM[:, 'aperture_background_err'])))
 
 
         stats['odometer_nb'] = self.odometer_nb

@@ -321,7 +321,7 @@ class ImageStats(Tools):
             dy2 = od.array(0., np.nanmedian(fit2[:,'y_err']))
         else:
             y2 = od.array(np.nanmedian(fit2[:,'y']), np.nanmedian(fit2[:,'y_err']))
-            y2_ref = od.array(np.nanmedian(fitR2[:,'y']), np,nanmedian(fitR2[:,'y_err']))
+            y2_ref = od.array(np.nanmedian(fitR2[:,'y']), np.nanmedian(fitR2[:,'y_err']))
             dy2 = y2 - y2_ref
         add_data('dy-pix-2', dy2)      
         
